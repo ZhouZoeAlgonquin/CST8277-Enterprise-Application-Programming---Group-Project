@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     query = "SELECT p FROM Professor p"
 )
 @Access(AccessType.FIELD)
-
+@AttributeOverride(name = "id", column = @Column(name = "professor_id"))
 
 public class Professor extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;

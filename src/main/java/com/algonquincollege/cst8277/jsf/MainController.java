@@ -37,7 +37,18 @@ public class MainController implements Serializable, MyConstants {
     @Inject
     protected StudentController studentController;
 
-    //TODO Add your own controllers here
+    @Inject
+    protected CourseController courseController;
+
+    @Inject
+    protected ProfessorController professorController;
+
+    @Inject
+    protected StudentClubController studentClubController;
+
+    @Inject
+    protected CourseRegistrationController courseRegistrationController;
+    
     
     protected String optionChosen = "None";
     protected List<String> options = Stream.of(NONE, STUDENT_MANAGEMENT, COURSE_MANAGEMENT, PROFESSOR_MANAGEMENT, STUDENT_CLUB_MANAGEMENT, COURSE_REGISTRATION, ASSIGN_PROFESSOR, ASSIGN_GRADE, CLUB_MEMBERSHIP_REGISTRATION).collect(Collectors.toList());
@@ -66,7 +77,15 @@ public class MainController implements Serializable, MyConstants {
     	switch (optionChosen) {
     		case STUDENT_MANAGEMENT: studentController.loadStudents();
     		break;
-    		//TODO Add your own cases here
+    		case COURSE_MANAGEMENT: courseController.loadCourses();
+    		break;
+    		case PROFESSOR_MANAGEMENT: professorController.loadProfessors();
+    		break;
+    		case STUDENT_CLUB_MANAGEMENT: studentClubController.loadStudentClubs();
+    		break;
+    		case COURSE_REGISTRATION: courseRegistrationController.loadCourseRegistrations();
+    		break;
+    		
     	}
     }
     
