@@ -24,16 +24,10 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-
-import com.algonquincollege.cst8277.entity.Academic;
-import com.algonquincollege.cst8277.entity.NonAcademic;
 
 @SuppressWarnings("unused")
 
@@ -65,7 +59,7 @@ public class StudentClub extends PojoBase implements Serializable {
 	protected String desc;
 
 	@Basic(optional = false)
-	@Column(name = "academic", nullable = false, insertable = false, updatable = false)
+	@Column(name = "academic", nullable = false)
 	protected boolean isAcademic;
 
 	@ManyToMany(mappedBy = "studentClubs", fetch = FetchType.LAZY)

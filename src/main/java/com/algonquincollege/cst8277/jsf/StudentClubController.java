@@ -16,6 +16,8 @@ import java.util.ResourceBundle;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -44,6 +46,8 @@ import com.algonquincollege.cst8277.rest.resource.MyObjectMapperProvider;
 public class StudentClubController implements Serializable, MyConstants {
     /** explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
+    
+    private static final Logger LOG = LogManager.getLogger();
 
     @Inject
     protected FacesContext facesContext;
@@ -133,11 +137,22 @@ public class StudentClubController implements Serializable, MyConstants {
                 .path(STUDENT_CLUB_RESOURCE_NAME + RESOURCE_PATH_ID_PATH.replace("{" + RESOURCE_PATH_ID_ELEMENT + "}", String.valueOf(club.getId())))
                 .request()
                 .put(Entity.json(club));
-        StudentClub updatedClub = response.readEntity(StudentClub.class);
-        updatedClub.setEditable(false);
-        int idx = listOfClubs.indexOf(club);
-        listOfClubs.remove(idx);
-        listOfClubs.add(idx, updatedClub);
+        
+        // Check if the response was successful
+        if (response.getStatus() >= 200 && response.getStatus() < 300) {
+            StudentClub updatedClub = response.readEntity(StudentClub.class);
+            updatedClub.setEditable(false);
+            int idx = listOfClubs.indexOf(club);
+            listOfClubs.remove(idx);
+            listOfClubs.add(idx, updatedClub);
+        } else {
+            // Log error and show message to user
+            String errorMsg = "Failed to update club. Status: " + response.getStatus();
+            LOG.error(errorMsg);
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMsg, null));
+            club.setEditable(false);
+        }
+        
         return null;
     }
 
@@ -166,13 +181,37 @@ public class StudentClubController implements Serializable, MyConstants {
     }
 
     public String addNewClub(StudentClub theNewClub) {
+        // Create the appropriate subclass based on academic flag
+        StudentClub clubToCreate;
+        if (theNewClub.getAcademic()) {
+            clubToCreate = new Academic();
+        } else {
+            clubToCreate = new NonAcademic();
+        }
+        clubToCreate.setName(theNewClub.getName());
+        clubToCreate.setDesc(theNewClub.getDesc());
+        
         Response response = webTarget
                 .register(auth)
                 .path(STUDENT_CLUB_RESOURCE_NAME)
                 .request()
-                .post(Entity.json(theNewClub));
-        StudentClub newClub = response.readEntity(StudentClub.class);
-        listOfClubs.add(newClub);
+                .post(Entity.json(clubToCreate));
+        
+        // Check if the response was successful
+        if (response.getStatus() >= 200 && response.getStatus() < 300) {
+            StudentClub newClub = response.readEntity(StudentClub.class);
+            listOfClubs.add(newClub);
+            
+            // Reset the form
+            this.newClub = new StudentClub();
+            toggleAdding();
+        } else {
+            // Log error and show message to user
+            String errorMsg = "Failed to create club. Status: " + response.getStatus();
+            LOG.error(errorMsg);
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMsg, null));
+        }
+        
         return null;
     }
 
