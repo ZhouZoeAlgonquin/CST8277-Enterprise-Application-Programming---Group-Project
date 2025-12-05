@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="4.0"
+    xmlns="https://jakarta.ee/xml/ns/jakartaee">
+  <application>
+    <resource-bundle>
+      <base-name>Bundle</base-name>
+      <var>uiconsts</var>
+    </resource-bundle>
+  </application>
+</faces-config>
